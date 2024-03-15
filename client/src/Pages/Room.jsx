@@ -1,7 +1,7 @@
 import React, { useEffect, useCallback, useState } from "react";
-import ReactPlayer from "react-player";
 import peer from "../Service/peer";
 import { useSocket } from "../Context/SocketProvider";
+import VideoLayout from "../Components/VideoLayout";
 
 const RoomPage = () => {
   const socket = useSocket();
@@ -110,35 +110,28 @@ const RoomPage = () => {
   ]);
 
   return (
-    <div>
-      <h1>Room Page</h1>
-      <h4>{remoteSocketId ? "Connected" : "No one in room"}</h4>
+    <div className="bg-gray-700 h-screen w-full text-white">
+      <h4>{remoteSocketId ? "User Connected" : "Looks like there is no one in the room"}</h4>
       {myStream && <button onClick={sendStreams}>Send Stream</button>}
       {remoteSocketId && <button onClick={handleCallUser}>CALL</button>}
-      {myStream && (
-        <>
-          <h1>My Stream</h1>
-          <ReactPlayer
-            playing
-            muted
-            height="100px"
-            width="200px"
-            url={myStream}
-          />
-        </>
-      )}
-      {remoteStream && (
-        <>
-          <h1>Remote Stream</h1>
-          <ReactPlayer
-            playing
-            muted
-            height="100px"
-            width="200px"
-            url={remoteStream}
-          />
-        </>
-      )}
+
+
+      <div className="flex justify-center">
+
+        {myStream && (
+
+          <div>
+            <VideoLayout streamSrc={myStream} />
+            <h1 className="text-center">My Stream</h1>
+          </div>
+        )}
+        {remoteStream && (
+          <div>
+            <VideoLayout streamSrc={remoteStream} />
+            <h1 className="text-center">Remote Stream</h1>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
