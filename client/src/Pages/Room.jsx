@@ -8,20 +8,26 @@ const RoomPage = () => {
   const [remoteSocketId, setRemoteSocketId] = useState(null);
   const [myStream, setMyStream] = useState();
   const [remoteStream, setRemoteStream] = useState();
+  const [height, setHeight] = useState('700px');
+  const [width, setWidth] = useState('1300px');
+
+  //Modifications...
+  const [remoteEmail, setRemoteEmail] = useState("");
 
   const handleUserJoined = useCallback(({ email, id }) => {
     console.log(`Email ${email} joined room`);
+    setRemoteEmail(email);
     setRemoteSocketId(id);
   }, []);
 
   const handleCallUser = useCallback(async () => {
-    const stream = await navigator.mediaDevices.getUserMedia({
-      audio: true,
-      video: true,
-    });
+    // const stream = await navigator.mediaDevices.getUserMedia({
+    //   audio: true,
+    //   video: true,
+    // });
     const offer = await peer.getOffer();
     socket.emit("user:call", { to: remoteSocketId, offer });
-    setMyStream(stream);
+    // setMyStream(stream);
   }, [remoteSocketId, socket]);
 
   const handleIncommingCall = useCallback(
@@ -109,26 +115,75 @@ const RoomPage = () => {
     handleNegoNeedFinal,
   ]);
 
+
+  ///Modifications...
+  useEffect(() => {
+    const getMedia = async () => {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: true,
+        video: true,
+      });
+      setMyStream(stream);
+    };
+    getMedia();
+  }, []);
+
+  useEffect(() => {
+    if (remoteStream) {
+      setHeight('600px')
+      setWidth('700px')
+    }
+  }, [remoteStream])
+
+  const endCall=useCallback(async()=>{
+    const stream = await navigator.mediaDevices.getUserMedia({
+      audio: false,
+      video: false,
+    });
+    setMyStream(stream);
+
+  })
+
+
+
+
+
+
   return (
-    <div className="bg-gray-700 h-screen w-full text-white">
-      <h4>{remoteSocketId ? "User Connected" : "Looks like there is no one in the room"}</h4>
-      {myStream && <button onClick={sendStreams}>Send Stream</button>}
-      {remoteSocketId && <button onClick={handleCallUser}>CALL</button>}
+    <div className="h-screen w-full bg-black text-white">
+      <div className="p-4">
+        <h4 className="text-center">{remoteSocketId ? "User Connected" : "Looks like there is no one in the room"}</h4>
+        <div className="flex flex-col">
+          {remoteSocketId && <div className="flex space-x-3 justify-end">
+            <h1 className="mt-2">{remoteEmail ? `${remoteEmail} has requested to join the meeting` : " "}</h1>
+            <button
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
+              onClick={handleCallUser}>Invite</button>
+          </div>}
+          {remoteStream && <div className="mt-5">
+            <button
+            className=" w-40 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
+            onClick={sendStreams}>Send Stream</button>
+            </div>}
+        </div>
 
 
-      <div className="flex justify-center">
+      </div>
+
+
+      <div className="flex justify-center p-2">
 
         {myStream && (
 
-          <div>
-            <VideoLayout streamSrc={myStream} />
-            <h1 className="text-center">My Stream</h1>
+          <div className="w-full">
+            <VideoLayout streamSrc={myStream} ht={height} wd={width} />
+            <h1 className="text-white -mt-10">You</h1>
           </div>
         )}
         {remoteStream && (
-          <div>
-            <VideoLayout streamSrc={remoteStream} />
-            <h1 className="text-center">Remote Stream</h1>
+          <div className="w-full">
+            <VideoLayout streamSrc={remoteStream} ht={height} wd={width} />
+            <h1 className="text-white -mt-10">{remoteEmail ? remoteEmail : 'Remote Stream'}</h1>
           </div>
         )}
       </div>

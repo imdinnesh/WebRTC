@@ -1,16 +1,16 @@
 import React from 'react'
 import ReactPlayer from "react-player";
 
-function VideoLayout({streamSrc}) {
+function VideoLayout({ streamSrc, ht, wd }) {
     return (
-        <div className='rounded-lg p-2'>
+        <div className='flex justify-center'>
             <ReactPlayer
-            playing
-            muted
-            height="500px"
-            width="550px"
-            url={streamSrc}
-          />
+                playing
+                muted
+                height={ht}
+                width={wd}
+                url={streamSrc}
+            />
         </div>
     )
 }

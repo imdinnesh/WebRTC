@@ -33,10 +33,29 @@ const LobbyScreen = () => {
     };
   }, [socket, handleJoinRoom]);
 
+  function generateRoomNumber() {
+    // Generate a random 6-digit number
+    const number = Math.floor(100000 + Math.random() * 900000);
+
+    // Convert the number to a string
+    const str = number.toString();
+
+    // Insert a '-' after every two digits
+    const roomNumber = str.replace(/(...?)/g, '$1-').slice(0, -1);
+
+    return roomNumber;
+  }
+
+  useEffect(() => {
+    setRoom(generateRoomNumber())
+  }, [])
+
+
+
   return (
     <div>
       <div className="flex">
-        
+
 
         <div className="w-full h-screen flex items-center">
           <div className="rounded-lg bg-white m-auto p-7 border-2 border-gray-200">
@@ -58,19 +77,23 @@ const LobbyScreen = () => {
                 <input type="text" id='room'
                   value={room}
                   onChange={(event) => setRoom(event.target.value)}
-                  className='w-80 h-10 border-2 border-gray-300 rounded-md px-2 -mt-3'/>
+                  placeholder={room}
+                  //disabled
+                  className='w-80 h-10 border-2 border-gray-300 rounded-md px-2 -mt-3' />
               </div>
 
               <button
                 className=' w-80 h-10 mt-4 text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700'>
-                Enter a Room
+                Create a Room
               </button>
               <div className="mt-2 flex space-x-2 items-center">
-                  <hr className="mt-1 w-36"/>
-                  <h1 className="text-gray-400">or</h1>
-                  <hr className="mt-1 w-36"/>
+                <hr className="mt-1 w-36" />
+                <h1 className="text-gray-400">or</h1>
+                <hr className="mt-1 w-36" />
               </div>
-              <button className="w-80 h-10 mt-4 px-5 py-2.5 me-2 mb-2 border-2 border-gray-200 rounded-lg text-sm hover:bg-gray-200">
+              <button
+                // onClick={JoinRoomComponent} 
+                className="w-80 h-10 mt-4 px-5 py-2.5 me-2 mb-2 border-2 border-gray-200 rounded-lg text-sm hover:bg-gray-200">
                 Join a Room
               </button>
             </form>
